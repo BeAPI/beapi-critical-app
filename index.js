@@ -5,7 +5,7 @@ function createWindow() {
   win = new BrowserWindow({ width: 1280, height: 720 })
 
   // Load view
-  win.loadFile('index.html')
+  win.loadURL('http://localhost:3000')
 
   win.on('closed', function () {
     // Dereference the window object, usually you would store windows
