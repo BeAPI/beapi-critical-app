@@ -1,0 +1,19 @@
+@import "~uikit/src/scss/variables.scss";
+@import "~uikit/src/scss/mixins.scss";
+@import "~uikit/src/scss/uikit.scss";
+/**
+ * Root
+ */
+@import "css/root/url-config";
+@import "css/root/mixins";
+@import "css/root/fonts";
+@import "css/root/normalize";
+@import "css/root/box-sizing";
+@import "css/root/colors";
+
+/**
+ * Views
+ */
+@import "css/views/layout";
+@import "css/views/app";
+@import "css/views/workspace";
