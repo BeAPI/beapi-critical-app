@@ -1,0 +1,19 @@
+.toolbar {
+    .uk-navbar {
+        border-bottom: $base-border;
+    }
+
+    .uk-navbar-nav {
+        >li {
+            >button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: $global-control-height;
+                padding: 0 $navbar-nav-item-padding-horizontal;
+                font-size: $navbar-nav-item-font-size;
+                text-decoration: none;
+            }
+        }
+    }
+}

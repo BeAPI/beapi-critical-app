@@ -2,5 +2,3 @@
 @include declare-font-face("Circular", "#{$fonts-url}/Circular/CircularStdMedium", 500);
 @include declare-font-face("Circular", "#{$fonts-url}/Circular/CircularStdBold", bold);
 @include declare-font-face("Circular", "#{$fonts-url}/Circular/CircularStdBlack", 900);
-
-$base-font-family: Circular, sans-serif;

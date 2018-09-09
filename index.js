@@ -2,7 +2,9 @@ const { app, BrowserWindow } = require('electron')
 
 function createWindow() {
   // Create Browser Window
-  win = new BrowserWindow({ width: 1280, height: 720 })
+  const win = new BrowserWindow({ width: 1280, height: 720 })
+
+  win.setPosition(0, 0)
 
   // Load view
   win.loadURL('http://localhost:3000')

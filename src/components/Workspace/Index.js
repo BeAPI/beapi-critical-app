@@ -4,6 +4,7 @@ import WorkspaceDrop from './WorkspaceDrop'
 import WorkspaceConfigInfos from './WorkspaceConfigInfos'
 import Critical from './../../critical'
 
+// https://github.com/electron/electron/issues/7300
 const fs = window.require('fs')
 
 class Index extends Component {
