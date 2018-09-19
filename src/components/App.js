@@ -119,12 +119,6 @@ class App extends Component {
                 this.setState({
                   loadingText: `${e._page}-${e._viewport}.css has been generated successfully`
                 })
-
-                UIkit.notification({
-                  message:  `${e._page}-${e._viewport}.css has been generated successfully`,
-                  status: 'success',
-                  pos: 'top-right',
-                })
               })
 
               return true
