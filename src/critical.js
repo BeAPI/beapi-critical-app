@@ -13,12 +13,7 @@ class Critical {
     const _configCritical = JSON.parse(fs.readFileSync(this.configPath))
     const _envUrl = _configCritical.envUrl
 
-    _configCritical.pages.forEach(page => {
-      page.url = _envUrl + page.url
-      _configCritical.viewports.forEach(viewport => {
-        this.initPenthouse(viewport.width, viewport.height, viewport.name, page.url, page.name)
-      })
-    })
+    return _configCritical.pages.map(page => _configCritical.viewports.map(viewport => this.initPenthouse(viewport.width, viewport.height, viewport.name, _envUrl + page.url, page.name)))
   }
   initPenthouse(_width, _height, _viewport, _url, _page) {
     return penthouse({
@@ -37,6 +32,7 @@ class Critical {
       } */
     })
     .then(criticalCss => {
+      console.log(criticalCss)
       const criticalFolder = this.stylePath.replace(this.styleFilename, '') + 'critical/'
       shell.mkdir('-p', path.resolve(criticalFolder))
 

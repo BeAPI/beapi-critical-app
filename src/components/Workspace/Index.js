@@ -1,64 +1,49 @@
-import React, { Component } from 'react';
+import React from 'react'
 
+import WorkspaceWelcome from './WorkspaceWelcome'
 import WorkspaceDrop from './WorkspaceDrop'
+import WorkspaceForm from './WorkspaceForm'
 import WorkspaceConfigInfos from './WorkspaceConfigInfos'
-import Critical from './../../critical'
+import WorkspaceLoading from './WorkspaceLoading'
 
-// https://github.com/electron/electron/issues/7300
-const fs = window.require('fs')
-
-class Index extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      config: [],
-      configPath: false,
-      stylePath: false,
-      styleFilename: undefined,
-    }
-  }
-
-  handleDropConfig(files, e) {
-    e.preventDefault()
-
-    const file = files[0]
-
-    if (file.type !== 'application/json') {
-      console.log('Not a json file')
-    } else {
-      this.setState({
-        config: JSON.parse(fs.readFileSync(file.path)),
-        configPath: file.path,
-      })
-    }
-  }
-  handleFormSubmit(e) {
-    const {configPath, stylePath, styleFilename} = this.state
-    e.preventDefault()
-
-    new Critical(configPath, stylePath, styleFilename).init()
-  }
-  handleChange(e) {
-    const file = e.target.files[0]
-
-    if (file.type !== 'text/css') {
-      console.log('Not a css file')
-    } else {
-      this.setState({
-        stylePath: file.path,
-        styleFilename: file.name,
-      })
-    }
-  }
-  render() {
-    const {config, configPath} = this.state
-    return (
-      <div className="workspace">
-        {!configPath && <WorkspaceDrop type="application/json" handleDrop={this.handleDropConfig.bind(this)} />}
-        {configPath && <WorkspaceConfigInfos config={config} handleChange={this.handleChange.bind(this)} handleFormSubmit={this.handleFormSubmit.bind(this)} />}
-      </div>
-    );
-  }
-}
+const Index = ({
+  handleClickStep,
+  handleDropConfigFile,
+  handleChangeConfigFile,
+  handleChangeStyleFile,
+  handleFormSubmit,
+  path,
+  step,
+  config,
+  configPath,
+  compiling
+}) => (
+  <div className="workspace">
+    <div className="uk-flex uk-flex-middle">
+      {/* Screen 0 */}
+      {step === 0 && <WorkspaceWelcome handleClickStep={handleClickStep} />}
+      {/* Screen 1 */}
+      {(step === 1 && path === 'open') && <WorkspaceDrop
+        text="Drag and drop your JSON configuration file or"
+        type="application/json"
+        handleDropFile={handleDropConfigFile}
+        handleChangeFile={handleChangeConfigFile}
+      />}
+      {(step === 1 && path === 'new') && <WorkspaceForm />}
+      {/* Screen 2 */}
+      {(step === 2 && configPath) && <WorkspaceConfigInfos
+        config={config}
+        type="text/css"
+        handleDropConfigFile={handleDropConfigFile}
+        handleChangeConfigFile={handleChangeConfigFile}
+        handleChangeStyleFile={handleChangeStyleFile}
+        handleFormSubmit={handleFormSubmit}
+      />}
+      {/* Screen 3 */}
+      {(step === 3 && compiling) && <WorkspaceLoading />}
+      {(step === 3 && !compiling) && <div>Loaded !</div>}
+    </div>
+  </div>
+)
 
 export default Index;

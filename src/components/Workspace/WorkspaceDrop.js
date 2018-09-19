@@ -2,8 +2,18 @@ import React from 'react'
 
 import FileDrop from 'react-file-drop'
 
-const WorkspaceDrop = ({handleDrop}) => (
-  <FileDrop className="workspace__drop" onDrop={(files, e) => handleDrop(files, e)}></FileDrop>
+const WorkspaceDrop = ({handleDropFile, handleChangeFile, text}) => (
+  <div className="workspace__drop">
+    <FileDrop className="js-upload uk-placeholder uk-text-center" onDrop={(files, e) => handleDropFile(files, e)}>
+      <span className="uk-text-middle"> <span uk-icon="icon: cloud-upload" />{text}</span>
+      <div uk-form-custom="">
+        <input type="file" onChange={e => handleChangeFile(e)} />
+        <span className="uk-link">selecting one</span>
+      </div>
+    </FileDrop>
+
+    <progress id="js-progressbar" className="uk-progress" value="0" max="100" hidden />
+  </div>
 )
 
 export default WorkspaceDrop
