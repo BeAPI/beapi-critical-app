@@ -11,7 +11,7 @@ class Critical {
   }
   init() {
     const _configCritical = JSON.parse(fs.readFileSync(this.configPath))
-    const _envUrl = _configCritical.envUrl
+    const _envUrl = _configCritical.url
 
     return _configCritical.pages.map(page => _configCritical.viewports.map(viewport => this.initPenthouse(viewport.width, viewport.height, viewport.name, _envUrl + page.url, page.name)))
   }
