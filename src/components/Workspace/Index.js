@@ -26,7 +26,7 @@ const Index = ({
       {/* Screen 1 */}
       {(step === 1 && path === 'open') && <WorkspaceDrop
         text="Drag and drop your JSON configuration file or"
-        type="application/json"
+        acceptedExtension=".json"
         handleDropFile={handleDropConfigFile}
         handleChangeFile={handleChangeConfigFile}
       />}
@@ -34,7 +34,6 @@ const Index = ({
       {/* Screen 2 */}
       {(step === 2 && configPath) && <WorkspaceConfigInfos
         config={config}
-        type="text/css"
         handleDropConfigFile={handleDropConfigFile}
         handleChangeConfigFile={handleChangeConfigFile}
         handleChangeStyleFile={handleChangeStyleFile}

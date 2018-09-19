@@ -4,7 +4,7 @@ import 'highlight.js/styles/atelier-heath-dark.css'
 
 import WorkspaceDrop from './WorkspaceDrop'
 
-const WorkspaceConfigInfos = ({config, type, handleDropStyleFile, handleChangeStyleFile}) => (
+const WorkspaceConfigInfos = ({config, handleDropStyleFile, handleChangeStyleFile}) => (
   <Fragment>
     <div className="uk-width-1-2 workspace__infos">
       {config.name && <h2 className="workspace__info-title">{config.name}</h2>}
@@ -47,17 +47,13 @@ const WorkspaceConfigInfos = ({config, type, handleDropStyleFile, handleChangeSt
           <div className="uk-accordion-content">
             <WorkspaceDrop
               text="Drag and drop your CSS file or"
-              type={type}
+              acceptedExtension=".css"
               handleDropFile={handleDropStyleFile}
               handleChangeFile={handleChangeStyleFile}
             />
           </div>
         </li>
       </ul>
-      {/* <form onSubmit={e => handleFormSubmit(e)}>
-        <input type="file" onChange={e => handleChangeStyleFile(e)} />
-        <button type="submit">Importer le CSS</button>
-      </form> */}
     </div>
     <div className="uk-width-1-2 workspace__highlight">
       <Highlight className="json">{JSON.stringify(config, null, '\t')}</Highlight>
