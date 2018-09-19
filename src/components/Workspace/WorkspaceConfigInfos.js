@@ -7,7 +7,8 @@ import WorkspaceDrop from './WorkspaceDrop'
 const WorkspaceConfigInfos = ({config, type, handleDropStyleFile, handleChangeStyleFile}) => (
   <Fragment>
     <div className="uk-width-1-2 workspace__infos">
-      <h2 className="workspace__info-title">{config.name}</h2>
+      {config.name && <h2 className="workspace__info-title">{config.name}</h2>}
+      {!config.name && <h2 className="workspace__info-title">Untitled Project</h2>}
       <ul uk-accordion="multiple: true;">
         <li>
           <a className="uk-accordion-title">Environnement</a>
