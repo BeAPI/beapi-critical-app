@@ -20,6 +20,7 @@ class App extends Component {
       stylePath: false,
       styleFilename: undefined,
       compiling: false,
+      loadingText: undefined
     }
   }
   /**
@@ -111,17 +112,32 @@ class App extends Component {
 
           const critical = new Critical(configPath, stylePath, styleFilename).init()
 
-          critical.map(item => {
-            item.then(function(e) {
-              console.log(e)
+          critical.map(page => {
+            console.log(page)
+            page.map(viewport => {
+              viewport.then(e => {
+                this.setState({
+                  loadingText: `${e._page}-${e._viewport}.css has been generated successfully`
+                })
+
+                UIkit.notification({
+                  message:  `${e._page}-${e._viewport}.css has been generated successfully`,
+                  status: 'success',
+                  pos: 'top-right',
+                })
+              })
+
+              return true
             })
+
+            return true
           })
         })
       }
     }
   }
   render() {
-    const {step, path, config, configPath, stylePath, styleFilename, compiling} = this.state
+    const {step, path, config, configPath, stylePath, styleFilename, compiling, loadingText} = this.state
 
     return (
       <div className="app">
@@ -133,6 +149,7 @@ class App extends Component {
           configPath={configPath}
           stylePath={stylePath}
           compiling={compiling}
+          loadingText={loadingText}
           styleFilename={styleFilename}
           handleClickStep={this.handleClickStep.bind(this)}
           handleDropConfigFile={this.handleDropConfigFile.bind(this)}

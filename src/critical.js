@@ -32,11 +32,16 @@ class Critical {
       } */
     })
     .then(criticalCss => {
-      console.log(criticalCss)
+      // console.log(criticalCss)
       const criticalFolder = this.stylePath.replace(this.styleFilename, '') + 'critical/'
       shell.mkdir('-p', path.resolve(criticalFolder))
 
       fs.writeFileSync(__dirname + criticalFolder + _page + '-' + _viewport + '.css', criticalCss)
+
+      return {
+        _page,
+        _viewport
+      }
     })
     .catch(err => {
       console.log(err)

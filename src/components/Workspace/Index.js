@@ -16,7 +16,8 @@ const Index = ({
   step,
   config,
   configPath,
-  compiling
+  compiling,
+  loadingText
 }) => (
   <div className="workspace">
     <div className="uk-flex uk-flex-middle">
@@ -40,7 +41,7 @@ const Index = ({
         handleFormSubmit={handleFormSubmit}
       />}
       {/* Screen 3 */}
-      {(step === 3 && compiling) && <WorkspaceLoading />}
+      {(step === 3 && compiling) && <WorkspaceLoading loadingText={loadingText} />}
       {(step === 3 && !compiling) && <div>Loaded !</div>}
     </div>
   </div>
