@@ -18,6 +18,7 @@ const Index = ({
   removeRow,
   handleRow,
   generateCritical,
+  openFile,
   step,
   config,
   configValidity,
@@ -34,6 +35,7 @@ const Index = ({
         handleFormScreen={handleFormScreen}
         handleDropFile={handleDropConfigFile}
         handleChangeFile={handleChangeConfigFile}
+        openFile={openFile}
       />}
       {/* Screen 1 */}
       {step === 1 && <WorkspaceForm

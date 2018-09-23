@@ -17,7 +17,7 @@ const Index = ({handleClickNew, handleChangeConfigFile}) => {
             </li>
             <li>
               <div className="uk-form-custom">
-                <input type="file" accept=".json" onChange={e => handleChangeConfigFile(e)} uk-tooltip="title: Open; pos: bottom-center;" />
+                <input type="file" accept=".json" onChange={e => handleChangeConfigFile(e.target.files[0])} uk-tooltip="title: Open; pos: bottom-center;" />
                 <button className="uk-button" uk-icon="folder" />
               </div>
             </li>

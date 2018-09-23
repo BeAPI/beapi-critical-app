@@ -29,6 +29,11 @@ class App extends Component {
       loadingText: undefined
     }
   }
+  componentDidMount() {
+    if (!window.localStorage.getItem('recentOpenedFiles')) {
+      window.localStorage.setItem('recentOpenedFiles', '[]')
+    }
+  }
   dragOver() {
     const $app = document.querySelector('.app')
 
@@ -110,6 +115,18 @@ class App extends Component {
     }
   }
   /**
+   * Open content from a filepath
+   * @param {String} filepath file path
+   */
+  openFile(filepath) {
+    const file = {
+      type: 'application/json',
+      path: filepath
+    }
+
+    this.handleChangeConfigFile(file)
+  }
+  /**
    * Get file dropped
    * @param {Object} files Object that contains files informations
    * @param {Object} e Drop Event
@@ -123,8 +140,13 @@ class App extends Component {
       $app.classList.remove('dragged')
     }
 
-    const file = files[0]
-
+    this.handleChangeConfigFile(files[0])
+  }
+  /**
+   * Get file uploaded
+   * @param {Object} file Object that contains file informations
+   */
+  handleChangeConfigFile(file) {
     if (typeof file !== 'undefined') {
       if (file.type !== 'application/json') {
         UIkit.notification({
@@ -133,12 +155,18 @@ class App extends Component {
           pos: 'top-right',
         })
       } else {
-        const fileContent = JSON.parse(fs.readFileSync(file.path))
+        if(!fs.existsSync(file.path)) {
+          UIkit.notification({
+            message: 'File not found',
+            status: 'danger',
+            pos: 'top-right',
+          })
+        } else {
+          this.updateRecentOpenedFiles(file.path)
 
-        if (this.checkConfigValidity(fileContent, true)) {
           this.setState({
             step: 1,
-            config: fileContent,
+            config: JSON.parse(fs.readFileSync(file.path)),
             configPath: file.path,
           })
         }
@@ -146,35 +174,26 @@ class App extends Component {
     }
   }
   /**
-   * Get file uploaded
-   * @param {Object} e Event that contains file informations
+   * Update Recent Opened files
+   * @param {String} filepath Path to file
    */
-  handleChangeConfigFile(e) {
-    const file = e.target.files[0]
-
-    if (typeof file !== 'undefined') {
-      if (file.type !== 'application/json') {
-        UIkit.notification({
-          message: 'Not a JSON file',
-          status: 'danger',
-          pos: 'top-right',
-        })
-      } else {
-        this.setState({
-          step: 1,
-          config: JSON.parse(fs.readFileSync(file.path)),
-          configPath: file.path,
-        })
-      }
+  updateRecentOpenedFiles(filepath) {
+    const recentFiles = JSON.parse(window.localStorage.getItem('recentOpenedFiles'))
+    if (!recentFiles.includes(filepath)) {
+      recentFiles.unshift(filepath)
     }
+
+    if (recentFiles.length > 5) {
+      recentFiles.pop()
+    }
+
+    window.localStorage.setItem('recentOpenedFiles', JSON.stringify(recentFiles))
   }
   /**
-   * Get CSS file from input file upload and get Critical CSS
-   * @param {Object} e Change Event
+   * Get CSS file from input file upload
+   * @param {Object} file Object that contains file informations
    */
-  handleChangeStyleFile(e) {
-    const file = e.target.files[0]
-
+  handleChangeStyleFile(file) {
     if (typeof file !== 'undefined') {
       if (file.type !== 'text/css') {
         UIkit.notification({
@@ -481,6 +500,7 @@ class App extends Component {
           removeRow={this.removeRow.bind(this)}
           handleRow={this.handleRow.bind(this)}
           generateCritical={this.generateCritical.bind(this)}
+          openFile={this.openFile.bind(this)}
         />
       </FileDrop>
     )
