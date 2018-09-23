@@ -10,8 +10,13 @@
     }
 
     &__welcome {
+        align-self: flex-start;
         width: 100%;
-        text-align: center;
+        padding: 20px;
+
+        .uk-button-link {
+            text-transform: none;
+        }
     }
 
     &__path {
@@ -36,7 +41,7 @@
     }
 
     &__drop {
-        margin: auto;
+        margin: 0 auto 20px;
 
         .uk-placeholder {
             margin: 0 auto;
@@ -62,14 +67,23 @@
     &__infos {
         position: relative;
         align-self: flex-start;
-        padding: 60px 20px;
+        padding: 60px 20px 20px;
         height: calc(100vh - 41px);
         overflow: auto;
 
-        .trigger-code {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .uk-iconnav {
+            position: fixed;
+            z-index: 1;
+            top: 41px;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: $global-inverse-color;
+            border-bottom: $base-border;
+
+            button {
+                padding: 0 $navbar-nav-item-padding-horizontal;
+            }
         }
 
         .uk-inline,
@@ -85,6 +99,12 @@
             }
         }
 
+        .uk-open {
+            .uk-accordion-title {
+                color: $global-color;
+            }
+        }
+
         .uk-form-large {
             font-size: 2rem;
 
@@ -97,13 +117,8 @@
             }
         }
 
-        .uk-fieldset {
-            margin-top: 20px;
-        }
-
-        .uk-legend {
-            margin-bottom: 10px;
-            font-size: 1.25rem;
+        .uk-form-custom {
+            width: 100%;
         }
 
         .row {
@@ -116,6 +131,9 @@
     }
 
     &__highlight {
+        position: relative;
+        z-index: 2;
+
         .hljs {
             height: calc(100vh - 41px);
         }

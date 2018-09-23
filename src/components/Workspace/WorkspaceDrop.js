@@ -11,8 +11,6 @@ const WorkspaceDrop = ({handleDropFile, handleChangeFile, text, acceptedExtensio
         <span className="uk-link">selecting one</span>
       </div>
     </FileDrop>
-
-    <progress id="js-progressbar" className="uk-progress" value="0" max="100" hidden />
   </div>
 )
 

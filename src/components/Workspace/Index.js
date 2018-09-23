@@ -1,50 +1,61 @@
 import React from 'react'
 
 import WorkspaceWelcome from './WorkspaceWelcome'
-import WorkspaceDrop from './WorkspaceDrop'
 import WorkspaceForm from './WorkspaceForm'
-import WorkspaceConfigInfos from './WorkspaceConfigInfos'
 import WorkspaceLoading from './WorkspaceLoading'
 
 const Index = ({
-  handleClickStep,
+  handleFormScreen,
   handleDropConfigFile,
   handleChangeConfigFile,
   handleChangeStyleFile,
   handleFormSubmit,
   handleSave,
-  path,
+  handleProjectName,
+  handleEnv,
+  addNewPage,
+  addNewViewport,
+  removeRow,
+  handleRow,
+  generateCritical,
   step,
   config,
-  configPath,
+  configValidity,
   compiledElements,
-  loadingText
+  loadingText,
+  stylePath
 }) => (
   <div className="workspace">
     <div className="uk-flex uk-flex-middle uk-flex-between">
       {/* Screen 0 */}
-      {step === 0 && <WorkspaceWelcome handleClickStep={handleClickStep} />}
-      {/* Screen 1 */}
-      {(step === 1 && path === 'open') && <WorkspaceDrop
+      {step === 0 && <WorkspaceWelcome
         text="Drag and drop your JSON configuration file or"
         acceptedExtension=".json"
+        handleFormScreen={handleFormScreen}
         handleDropFile={handleDropConfigFile}
         handleChangeFile={handleChangeConfigFile}
       />}
-      {(step === 1 && path === 'new') && <WorkspaceForm
-        handleSave={handleSave}
-      />}
-      {/* Screen 2 */}
-      {(step === 2 && configPath) && <WorkspaceConfigInfos
+      {/* Screen 1 */}
+      {step === 1 && <WorkspaceForm
         config={config}
+        configValidity={configValidity}
         handleDropConfigFile={handleDropConfigFile}
         handleChangeConfigFile={handleChangeConfigFile}
         handleChangeStyleFile={handleChangeStyleFile}
         handleFormSubmit={handleFormSubmit}
+        handleSave={handleSave}
+        handleProjectName={handleProjectName}
+        handleEnv={handleEnv}
+        addNewPage={addNewPage}
+        addNewViewport={addNewViewport}
+        removeRow={removeRow}
+        handleRow={handleRow}
+        generateCritical={generateCritical}
+        stylePath={stylePath}
       />}
-      {/* Screen 3 */}
-      {(step === 3 && compiledElements.length > 0) && <WorkspaceLoading loadingText={loadingText} compiledElements={compiledElements} />}
-      {(step === 3 && !compiledElements) && <div>Loaded !</div>}
+      {/* Screen 2 */}
+      {(step === 2 && compiledElements.length > 0) && <WorkspaceLoading loadingText={loadingText} compiledElements={compiledElements} />}
+      {/* {(step === 3 && !compiledElements) && <div>Loaded !</div>} */}
     </div>
   </div>
 )

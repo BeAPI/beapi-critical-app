@@ -3,26 +3,23 @@ import UIkit from 'uikit'
 import Icons from 'uikit/dist/js/uikit-icons'
 UIkit.use(Icons)
 
-const Index = ({handleClickNew, handleClickStep, handleChangeConfigFile}) => {
+const Index = ({handleClickNew, handleChangeConfigFile}) => {
   return (
     <div className="toolbar">
       <nav className="uk-navbar" uk-navbar="mode: click">
-        <div className="uk-navbar-center">
+        <div className="uk-navbar-left">
           <ul className="uk-iconnav">
             <li>
               <button onClick={e => handleClickNew(e, 0)} className="uk-button" uk-icon="file" uk-tooltip="title: New; pos: bottom-center;" />
             </li>
             <li>
-              <button onClick={e => handleClickStep(e, 'new')} className="uk-button" uk-icon="file-edit" uk-tooltip="title: New configuration file; pos: bottom-center;" />
+              <button onClick={e => handleClickNew(e, 1)} className="uk-button" uk-icon="file-edit" uk-tooltip="title: New configuration file; pos: bottom-center;" />
             </li>
             <li>
               <div className="uk-form-custom">
                 <input type="file" accept=".json" onChange={e => handleChangeConfigFile(e)} uk-tooltip="title: Open; pos: bottom-center;" />
-                <button className="uk-button" uk-icon="push" />
+                <button className="uk-button" uk-icon="folder" />
               </div>
-            </li>
-            <li>
-              <button className="uk-button" uk-icon="download" uk-tooltip="title: Export styles; pos: bottom-center;" disabled />
             </li>
           </ul>
         </div>

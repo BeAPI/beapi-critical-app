@@ -16,10 +16,14 @@ class App extends Component {
     super(props)
     this.state = {
       step: 0,
-      path: undefined,
-      config: [],
-      configPath: false,
-      stylePath: false,
+      config: {
+        name: 'Untitled Project',
+        url: '',
+        pages: [{name: '', path: ''}],
+        viewports: [{name: '', width: '', height: ''}],
+      },
+      configPath: undefined,
+      stylePath: undefined,
       styleFilename: undefined,
       compiledElements: [],
       loadingText: undefined
@@ -39,64 +43,66 @@ class App extends Component {
       $app.classList.remove('dragged')
     }
   }
+  handleFormScreen() {
+    this.setState({
+      step: 1
+    })
+  }
   /**
    * Click handler to display first screen
    * @param {Object} e Click Event
    * @param {Number} step The step of the user path
    */
   handleClickNew(e, step) {
-    if (step === 0) {
-      this.setState({
-        step,
-        path: undefined,
-        config: [],
-        configPath: false,
-        stylePath: false,
-        styleFilename: undefined,
-        compiledElements: [],
-        loadingText: undefined
-      })
-    } else {
-      this.setState({step})
-    }
-  }
-  /**
-   * Define the path "New" or "Open"
-   * @param {Object} e Click Event
-   * @param {String} path The user path "New" or "Open" state
-   */
-  handleClickStep(e, path) {
     this.setState({
-      path,
-      step: 1
+      step,
+      config: {
+        name: 'Untitled Project',
+        url: '',
+        pages: [{name: '', path: ''}],
+        viewports: [{name: '', width: '', height: ''}],
+      },
+      configPath: undefined,
+      stylePath: undefined,
+      styleFilename: undefined,
+      compiledElements: [],
+      loadingText: undefined
     })
   }
   /**
    * Check if configuration object is valid
+   * @param {Object} fileContent Configuration Object
+   * @param {Boolean} notification Display UIKit notification
    */
-  checkConfigValidity(fileContent) {
+  checkConfigValidity(fileContent, notification = false) {
     if (fileContent.url.length === 0 || !fileContent.url.match(/(https?:\/\/[^\s]+)/g)) {
-      UIkit.notification({
-        message: 'The url is missing or wrong',
-        status: 'danger',
-        pos: 'top-right',
-      })
+      if (notification) {
+        UIkit.notification({
+          message: 'The url is missing or wrong',
+          status: 'danger',
+          pos: 'top-right',
+        })
+      }
 
       return false
     } else if (fileContent.pages[0].name.length === 0 || fileContent.pages[0].path.length === 0) {
-      UIkit.notification({
-        message: 'Pages are missing',
-        status: 'danger',
-        pos: 'top-right',
-      })
+      if (notification) {
+        UIkit.notification({
+          message: 'Pages are missing',
+          status: 'danger',
+          pos: 'top-right',
+        })
+      }
 
       return false
     } else if (fileContent.viewports[0].name.length === 0 || fileContent.viewports[0].width.length === 0 || fileContent.viewports[0].height.length === 0) {
-      UIkit.notification({
-        message: 'Viewports informations are wrong',
-        status: 'danger',
-        pos: 'top-right',
-      })
+      if (notification) {
+        UIkit.notification({
+          message: 'Viewports informations are wrong',
+          status: 'danger',
+          pos: 'top-right',
+        })
+      }
 
       return false
     } else {
@@ -129,9 +135,9 @@ class App extends Component {
       } else {
         const fileContent = JSON.parse(fs.readFileSync(file.path))
 
-        if (this.checkConfigValidity(fileContent)) {
+        if (this.checkConfigValidity(fileContent, true)) {
           this.setState({
-            step: 2,
+            step: 1,
             config: fileContent,
             configPath: file.path,
           })
@@ -155,7 +161,7 @@ class App extends Component {
         })
       } else {
         this.setState({
-          step: 2,
+          step: 1,
           config: JSON.parse(fs.readFileSync(file.path)),
           configPath: file.path,
         })
@@ -178,90 +184,43 @@ class App extends Component {
         })
       } else {
         this.setState({
-          step: 3,
-          compiling: true,
           stylePath: file.path,
           styleFilename: file.name,
-        }, function () {
-          const {configPath, stylePath, styleFilename} = this.state
-          let compiledElements = this.state.compiledElements
-
-          const _configCritical = JSON.parse(fs.readFileSync(configPath))
-          const _envUrl = _configCritical.url
-
-          _configCritical.pages.map(page => {
-            _configCritical.viewports.map(viewport => {
-              compiledElements.push({
-                page: page.name,
-                viewport: viewport.name,
-                status: 'loading'
-              })
-
-              const critical = new Critical(
-                _envUrl + page.path,
-                page.name,
-                viewport.name,
-                viewport.width,
-                viewport.height,
-                stylePath,
-                styleFilename
-              ).init()
-
-              critical.then(data => {
-                this.setState({
-                  compiledElements: this.state.compiledElements
-                    .map(compiledElement =>
-                      (compiledElement.page === data.page && compiledElement.viewport === data.viewport)
-                      ? Object.assign({}, compiledElement, { status: 'loaded' })
-                      : compiledElement
-                    )
-                })
-              })
-            })
-          })
-
-          this.setState({
-            compiledElements
-          })
         })
       }
     }
   }
   /**
-   * Save Method
+   * Save Configuration file
+   * @param {Object} configuration Configuration Object
    */
   handleSave(configuration) {
-    console.log(configuration)
-    let formatedConfiguration = configuration
-    const filename = formatedConfiguration.name
+    let filename = configuration.name
 
-    // Remove empty pages array
-    formatedConfiguration.pages.forEach((page, i) => {
-      if(page.name.length === 0 || page.path.length === 0) {
-        formatedConfiguration.pages.splice(i, 1)
-      }
-    })
+    if (typeof filename === 'undefined') {
+      filename = 'Untitled'
+    }
 
-    // Remove empty viewports array
-    formatedConfiguration.viewports.forEach((viewport, i) => {
-      if(viewport.name.length === 0 || viewport.width.length === 0 || viewport.height.length === 0) {
-        formatedConfiguration.viewports.splice(i, 1)
-      }
-    })
-
-    if (this.checkConfigValidity(configuration)) {
-      dialog.showSaveDialog({
+    if (this.checkConfigValidity(configuration, true)) {
+      dialog.showSaveDialog(window.require('electron').remote.getCurrentWindow(), {
         title: 'Save your configuration file',
-        filters: [{
-          name: filename,
-          extensions: ['json']
-        }]
+        defaultPath: `~/${filename}.json`,
+        filters: [
+          {
+            name: 'JSON',
+            extensions: ['json']
+          },
+          {
+            name: 'All Files',
+            extensions: ['*']
+          }
+        ]
       }, filename => {
         if (filename === undefined) {
           return
         }
 
-        fs.writeFile(filename, JSON.stringify(formatedConfiguration), err => {
+        fs.writeFile(filename, JSON.stringify(configuration, null, '\t'), err => {
           if (err) {
             UIkit.notification({
               message: err,
@@ -279,30 +238,249 @@ class App extends Component {
       })
     }
   }
+  /**
+   * Update Project Name
+   * @param {Object} e Change Event
+   */
+  handleProjectName(e) {
+    const {config} = this.state
+    let value = e.target.value
+
+    if (value.length === 0) {
+      value = 'Untitled Project'
+    }
+
+    this.setState({
+      config: {
+        name: value,
+        url: config.url,
+        pages: config.pages,
+        viewports: config.viewports,
+      }
+    })
+  }
+  /**
+   * Update Environment project
+   * @param {Object} e Change Event
+   */
+  handleEnv(e) {
+    const {config} = this.state
+    let value = e.target.value
+
+    if (value.match(/(https?:\/\/[^\s]+)/g)) {
+      e.target.classList.remove('uk-form-danger')
+
+      this.setState({
+        config: {
+          name: config.name,
+          url: value,
+          pages: config.pages,
+          viewports: config.viewports,
+        }
+      })
+    } else {
+      if (value.length) {
+        e.target.classList.add('uk-form-danger')
+      }
+
+      this.setState({
+        config: {
+          name: config.name,
+          url: '',
+          pages: config.pages,
+          viewports: config.viewports,
+        }
+      })
+    }
+  }
+  /**
+   * Add a new blank page field
+   */
+  addNewPage() {
+    const {config} = this.state
+
+    this.setState({
+      config: {
+        name: config.name,
+        url: config.url,
+        pages: [...config.pages, {name: '', path: ''}],
+        viewports: config.viewports,
+      }
+    })
+  }
+  /**
+   * Add a new blank viewport field
+   */
+  addNewViewport() {
+    const {config} = this.state
+
+    this.setState({
+      config: {
+        name: config.name,
+        url: config.url,
+        pages: config.pages,
+        viewports: [...config.viewports, {name: '', width: '', height: ''}],
+      }
+    })
+  }
+  /**
+   * Remove a row field
+   */
+  removeRow(e, index, type) {
+    const {config} = this.state
+
+    switch (type) {
+      case 'page':
+        const newPages = config.pages.splice(index, 1)
+
+        this.setState({
+          name: config.name,
+          url: config.url,
+          pages: newPages,
+          viewports: config.viewports,
+        })
+        break
+
+      case 'viewport':
+        const newViewports = config.viewports.splice(index, 1)
+
+        this.setState({
+          name: config.name,
+          url: config.url,
+          pages: config.pages,
+          viewports: newViewports,
+        })
+        break
+
+      default:
+        return false
+    }
+  }
+  /**
+   * Update page or viewports
+   */
+  handleRow(e, index, key) {
+    const {config} = this.state
+    const {pages, viewports} = config
+    const value = e.target.value
+
+    switch (key) {
+      case 'page-name':
+        pages[index].name = value
+        break
+      case 'page-path':
+        pages[index].path = value.toLowerCase()
+        break
+      case 'viewport-name':
+        viewports[index].name = value
+        break
+      case 'viewport-width':
+        viewports[index].width = value
+        break
+      case 'viewport-height':
+        viewports[index].height = value
+        break
+      default:
+        return false
+    }
+
+    this.setState({
+      config: {
+        name: config.name,
+        url: config.url,
+        pages: config.pages,
+        viewports: config.viewports,
+      }
+    })
+  }
+  /**
+   * Generate Critical CSS
+   */
+  generateCritical() {
+    this.setState({
+      step: 2,
+      compiling: true,
+    }, function () {
+      const {configPath, stylePath, styleFilename} = this.state
+      let compiledElements = this.state.compiledElements
+
+      const _configCritical = JSON.parse(fs.readFileSync(configPath))
+      const _envUrl = _configCritical.url
+
+      _configCritical.pages.map(page => {
+        _configCritical.viewports.map(viewport => {
+          compiledElements.push({
+            page: page.name,
+            viewport: viewport.name,
+            status: 'loading'
+          })
+
+          const critical = new Critical(
+            _envUrl + page.path,
+            page.name,
+            viewport.name,
+            viewport.width,
+            viewport.height,
+            stylePath,
+            styleFilename
+          ).init()
+
+          critical.then(data => {
+            this.setState({
+              compiledElements: this.state.compiledElements
+                .map(compiledElement =>
+                  (compiledElement.page === data.page && compiledElement.viewport === data.viewport)
+                  ? Object.assign({}, compiledElement, { status: 'loaded' })
+                  : compiledElement
+                )
+            })
+          })
+        })
+      })
+
+      this.setState({
+        compiledElements
+      })
+    })
+  }
   render() {
-    const {step, path, config, configPath, stylePath, styleFilename, compiledElements, loadingText} = this.state
+    const {
+      step,
+      config,
+      configPath,
+      stylePath,
+      styleFilename,
+      compiledElements,
+      loadingText
+    } = this.state
 
     return (
       <FileDrop className="app" onDragOver={this.dragOver} onDragLeave={this.dragLeave} onDrop={(files, e) => this.handleDropConfigFile(files, e)}>
         <Toolbar
           handleClickNew={this.handleClickNew.bind(this)}
-          handleClickStep={this.handleClickStep.bind(this)}
           handleChangeConfigFile={this.handleChangeConfigFile.bind(this)}
         />
         <Workspace
           step={step}
-          path={path}
           config={config}
+          configValidity={this.checkConfigValidity(config)}
           configPath={configPath}
           stylePath={stylePath}
           compiledElements={compiledElements}
           loadingText={loadingText}
           styleFilename={styleFilename}
-          handleClickStep={this.handleClickStep.bind(this)}
+          handleFormScreen={this.handleFormScreen.bind(this)}
           handleDropConfigFile={this.handleDropConfigFile.bind(this)}
           handleChangeConfigFile={this.handleChangeConfigFile.bind(this)}
           handleChangeStyleFile={this.handleChangeStyleFile.bind(this)}
           handleSave={this.handleSave.bind(this)}
+          handleProjectName={this.handleProjectName.bind(this)}
+          handleEnv={this.handleEnv.bind(this)}
+          addNewPage={this.addNewPage.bind(this)}
+          addNewViewport={this.addNewViewport.bind(this)}
+          removeRow={this.removeRow.bind(this)}
+          handleRow={this.handleRow.bind(this)}
+          generateCritical={this.generateCritical.bind(this)}
         />
       </FileDrop>
     )

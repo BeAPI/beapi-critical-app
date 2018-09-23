@@ -5,215 +5,111 @@ import 'highlight.js/styles/atelier-heath-dark.css'
 
 import WorkspaceFormPage from './WorkspaceFormPage'
 import WorkspaceFormViewport from './WorkspaceFormViewport'
+import WorkspaceDrop from './WorkspaceDrop'
 
 class WorkspaceForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      configuration: {
-        name: 'Untitled Project',
-        url: '',
-        pages: [{name: '', path: ''}],
-        viewports: [{name: '', width: '', height: ''}],
-      },
       highlight: true
     }
-
-    this.addNewPage = this.addNewPage.bind(this)
-    this.addNewViewport = this.addNewViewport.bind(this)
-    this.removeRow = this.removeRow.bind(this)
-    this.handleRow = this.handleRow.bind(this)
   }
   handleHightlightDisplay(e) {
     this.setState({
       highlight: !this.state.highlight
     })
   }
-  handleProjectName(e) {
-    const {configuration} = this.state
-    let value = e.target.value
-
-    if (value.length === 0) {
-      value = 'Untitled Project'
-    }
-
-    this.setState({
-      configuration: {
-        name: value,
-        url: configuration.url,
-        pages: configuration.pages,
-        viewports: configuration.viewports,
-      }
-    })
-  }
-  handleEnv(e) {
-    const {configuration} = this.state
-    let value = e.target.value
-
-    if (value.match(/(https?:\/\/[^\s]+)/g)) {
-      e.target.classList.remove('uk-form-danger')
-
-      this.setState({
-        configuration: {
-          name: configuration.name,
-          url: value,
-          pages: configuration.pages,
-          viewports: configuration.viewports,
-        }
-      })
-    } else {
-      if (value.length) {
-        e.target.classList.add('uk-form-danger')
-      }
-
-      this.setState({
-        configuration: {
-          name: configuration.name,
-          url: '',
-          pages: configuration.pages,
-          viewports: configuration.viewports,
-        }
-      })
-    }
-  }
-  addNewPage() {
-    const {configuration} = this.state
-
-    this.setState({
-      configuration: {
-        name: configuration.name,
-        url: configuration.url,
-        pages: [...configuration.pages, {name: '', path: ''}],
-        viewports: configuration.viewports,
-      }
-    })
-  }
-  addNewViewport() {
-    const {configuration} = this.state
-
-    this.setState({
-      configuration: {
-        name: configuration.name,
-        url: configuration.url,
-        pages: configuration.pages,
-        viewports: [...configuration.viewports, {name: '', width: '', height: ''}],
-      }
-    })
-  }
-  removeRow(e, index, type) {
-    const {configuration} = this.state
-
-    switch (type) {
-      case 'page':
-        const newPages = configuration.pages.splice(index, 1)
-
-        this.setState({
-          name: configuration.name,
-          url: configuration.url,
-          pages: newPages,
-          viewports: configuration.viewports,
-        })
-        break
-
-      case 'viewport':
-        const newViewports = configuration.viewports.splice(index, 1)
-
-        this.setState({
-          name: configuration.name,
-          url: configuration.url,
-          pages: configuration.pages,
-          viewports: newViewports,
-        })
-        break
-
-      default:
-        return false
-    }
-  }
-  handleRow(e, index, key) {
-    const {configuration} = this.state
-    const {pages, viewports} = configuration
-    const value = e.target.value
-
-    switch (key) {
-      case 'page-name':
-        pages[index].name = value
-        break
-      case 'page-path':
-        pages[index].path = value.toLowerCase()
-        break
-      case 'viewport-name':
-        viewports[index].name = value
-        break
-      case 'viewport-width':
-        viewports[index].width = value
-        break
-      case 'viewport-height':
-        viewports[index].height = value
-        break
-      default:
-        return false
-    }
-
-    this.setState({
-      configuration: {
-        name: configuration.name,
-        url: configuration.url,
-        pages: configuration.pages,
-        viewports: configuration.viewports,
-      }
-    })
-  }
   render() {
-    const {configuration, highlight} = this.state
-    const {handleSave} = this.props
+    const {highlight} = this.state
+    const {
+      config,
+      configValidity,
+      stylePath,
+      handleSave,
+      handleDropStyleFile,
+      handleChangeStyleFile,
+      handleProjectName,
+      handleEnv,
+      addNewPage,
+      addNewViewport,
+      removeRow,
+      handleRow,
+      generateCritical,
+    } = this.props
 
     return (
       <Fragment>
         <div className={`${highlight ? 'uk-width-1-2' : 'uk-width-1-1'} workspace__infos`}>
-          <button className="trigger-code" onClick={this.handleHightlightDisplay.bind(this)} uk-icon="icon: code" uk-tooltip={`title: ${highlight ? 'Hide JSON Object' : 'See JSON Object'}; pos: bottom-center;`} />
+          <ul className="uk-iconnav">
+            <li><button type="button" onClick={() => handleSave(config)} uk-icon="download" uk-tooltip="title: Save; pos: bottom-center;" /></li>
+            <li><button className="trigger-code" onClick={this.handleHightlightDisplay.bind(this)} uk-icon="icon: code" uk-tooltip={`title: ${highlight ? 'Hide JSON Object' : 'See JSON Object'}; pos: bottom-center;`} /></li>
+          </ul>
+
           <div className="uk-inline">
             <button className="uk-form-icon uk-form-icon-flip" uk-icon="icon: pencil" onClick={e => {e.target.closest('.uk-inline').querySelector('.uk-input').focus()}} />
-            <input className="uk-input uk-form-blank uk-form-large uk-form-width-large" onChange={this.handleProjectName.bind(this)} type="text" placeholder="Project Name" />
+            <input className="uk-input uk-form-blank uk-form-large uk-form-width-large" onChange={e => handleProjectName(e)} type="text" placeholder="Untitled Project" value={(typeof config.name !== 'undefined' && config.name.length > 0 )? config.name : ''} />
           </div>
 
-          <hr className="uk-divider-icon" />
+          <ul uk-accordion="multiple: true;">
+            <li>
+              <a className="uk-accordion-title"><span className="uk-margin-small-right" uk-icon="link" /> Environment</a>
+              <div className="uk-accordion-content">
+                <input className="uk-input" onChange={e => handleEnv(e)} type="url" placeholder="https://beapi.fr" value={(typeof config.url !== 'undefined' && config.url.length > 0) ? config.url : ''} />
+              </div>
+            </li>
+            <li>
+              <a className="uk-accordion-title"><span className="uk-margin-small-right" uk-icon="copy" /> Pages</a>
+              <div className="uk-accordion-content">
+                {config.pages.map((page, i) => (
+                  <WorkspaceFormPage key={`page-row-${i}`} index={i} disabledRemoveButton={config.pages.length === 1} page={config.pages[i]} handleRow={handleRow} removeRow={removeRow} />
+                ))}
 
-          <fieldset className="uk-fieldset">
-            <legend className="uk-legend"><span className="uk-margin-small-right" uk-icon="link" /> Environment</legend>
+                <button type="button" className="uk-text-center" uk-tooltip="title: Add a new page; pos: right-center;" onClick={() => addNewPage()} uk-icon="plus-circle" />
+              </div>
+            </li>
+            <li>
+              <a className="uk-accordion-title"><span className="uk-margin-small-right" uk-icon="laptop" /> Viewports</a>
+              <div className="uk-accordion-content">
+                {config.viewports.map((viewport, i) => (
+                  <WorkspaceFormViewport key={`viewport-row-${i}`} index={i} disabledRemoveButton={config.viewports.length === 1} viewport={config.viewports[i]} handleRow={handleRow} removeRow={removeRow} />
+                ))}
 
-            <input className="uk-input" onChange={this.handleEnv.bind(this)} type="url" placeholder="https://beapi.fr" />
-          </fieldset>
-
-          <hr className="uk-divider-icon" />
-
-          <fieldset className="uk-fieldset">
-            <legend className="uk-legend"><span className="uk-margin-small-right" uk-icon="copy" /> Pages</legend>
-
-            {configuration.pages.map((page, i) => (
-              <WorkspaceFormPage key={`page-row-${i}`} index={i} disabledRemoveButton={configuration.pages.length === 1} page={configuration.pages[i]} handleRow={this.handleRow} removeRow={this.removeRow} />
-            ))}
-
-            <button type="button" className="uk-text-center" uk-tooltip="title: Add a new page; pos: right-center;" onClick={this.addNewPage} uk-icon="plus-circle" />
-          </fieldset>
-
-          <hr className="uk-divider-icon" />
-
-          <fieldset className="uk-fieldset">
-            <legend className="uk-legend"><span className="uk-margin-small-right" uk-icon="laptop" /> Viewports</legend>
-
-            {configuration.viewports.map((viewport, i) => (
-              <WorkspaceFormViewport key={`viewport-row-${i}`} index={i} disabledRemoveButton={configuration.viewports.length === 1} viewport={configuration.viewports[i]} handleRow={this.handleRow} removeRow={this.removeRow} />
-            ))}
-
-            <button type="button" className="uk-text-center" uk-tooltip="title: Add a new viewport; pos: right-center;" onClick={this.addNewViewport} uk-icon="plus-circle" />
-          </fieldset>
+                <button type="button" className="uk-text-center" uk-tooltip="title: Add a new viewport; pos: right-center;" onClick={() => addNewViewport()} uk-icon="plus-circle" />
+              </div>
+            </li>
+          </ul>
 
           <hr className="uk-divider-icon" />
-          <button type="button" onClick={() => handleSave(configuration)} className="uk-button uk-button-default">Save as...</button>
+
+          {typeof stylePath === 'undefined' && <WorkspaceDrop
+              text="Drag and drop your CSS file or"
+              acceptedExtension=".css"
+              handleDropFile={handleDropStyleFile}
+              handleChangeFile={handleChangeStyleFile}
+            />
+          }
+
+          {typeof stylePath !== 'undefined' &&
+            <Fragment>
+              <div className="uk-margin">
+                <dl className="uk-description-list">
+                  <dt>Import your CSS</dt>
+                  <dd>
+                    <div uk-form-custom="target: true">
+                      <input type="file" onChange={e => handleChangeStyleFile(e)} />
+                      <button className="uk-form-icon uk-form-icon-flip" uk-icon="icon: pencil" onClick={e => {e.target.closest('.uk-inline').querySelector('.uk-input').focus()}} />
+                      <input className="uk-input uk-form-blank uk-form-width-large" onChange={e => handleProjectName(e)} type="text" value={stylePath} />
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+
+              {configValidity && <button className="uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom" onClick={() => generateCritical()}>Generate Critial CSS</button>}
+            </Fragment>
+          }
         </div>
         <div className={`${highlight ? 'uk-width-1-2' : 'uk-width-0'} workspace__highlight`}>
-          <Highlight className="json">{JSON.stringify(configuration, null, '\t')}</Highlight>
+          <Highlight className="json">{JSON.stringify(config, null, '\t')}</Highlight>
         </div>
       </Fragment>
     )

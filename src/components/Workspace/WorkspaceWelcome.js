@@ -1,14 +1,28 @@
 import React from 'react'
+import WorkspaceDrop from './WorkspaceDrop';
 
-const WorkspaceWelcome = ({handleClickStep}) => (
+const WorkspaceWelcome = ({acceptedExtension, text, handleFormScreen, handleDropFile, handleChangeFile}) => (
   <div className="workspace__welcome">
-    <button onClick={e => handleClickStep(e, 'new')} className="workspace__path uk-button uk-button-link" type="button">
-      <span className="workspace__icon" uk-icon="icon: file-edit; ratio: 3.5;"></span> Create a new configuration file
-    </button>
-    <hr className="uk-divider-icon" />
-    <button onClick={e => handleClickStep(e, 'open')} className="workspace__path uk-button uk-button-link" type="button">
-      <span className="workspace__icon" uk-icon="icon: push; ratio: 3.5"></span> Generate Critical CSS from an existing configuration JSON file
-    </button>
+    <h2>BeAPI Critical CSS</h2>
+
+    <div className="uk-flex">
+      <div className="uk-width-1-2">
+        <dl className="uk-description-list">
+          <dt>New</dt>
+          <dd>
+            <button onClick={() => {handleFormScreen()}} className="uk-button uk-button-small uk-button-link" type="button">Create a new configuration file</button>
+          </dd>
+        </dl>
+      </div>
+      <div className="uk-width-1-2">
+        <dl className="uk-description-list">
+          <dt>Open</dt>
+          <dd>
+            <WorkspaceDrop acceptedExtension={acceptedExtension} text={text} handleDropFile={handleDropFile} handleChangeFile={handleChangeFile} />
+          </dd>
+        </dl>
+      </div>
+    </div>
   </div>
 )
 
