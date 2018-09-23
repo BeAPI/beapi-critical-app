@@ -1,3 +1,9 @@
 .app {
     height: 100vh;
+
+    &.dragged {
+        .workspace {
+            opacity: .5;
+        }
+    }
 }

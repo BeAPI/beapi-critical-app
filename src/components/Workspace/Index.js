@@ -12,15 +12,16 @@ const Index = ({
   handleChangeConfigFile,
   handleChangeStyleFile,
   handleFormSubmit,
+  handleSave,
   path,
   step,
   config,
   configPath,
-  compiling,
+  compiledElements,
   loadingText
 }) => (
   <div className="workspace">
-    <div className="uk-flex uk-flex-middle">
+    <div className="uk-flex uk-flex-middle uk-flex-between">
       {/* Screen 0 */}
       {step === 0 && <WorkspaceWelcome handleClickStep={handleClickStep} />}
       {/* Screen 1 */}
@@ -30,7 +31,9 @@ const Index = ({
         handleDropFile={handleDropConfigFile}
         handleChangeFile={handleChangeConfigFile}
       />}
-      {(step === 1 && path === 'new') && <WorkspaceForm />}
+      {(step === 1 && path === 'new') && <WorkspaceForm
+        handleSave={handleSave}
+      />}
       {/* Screen 2 */}
       {(step === 2 && configPath) && <WorkspaceConfigInfos
         config={config}
@@ -40,8 +43,8 @@ const Index = ({
         handleFormSubmit={handleFormSubmit}
       />}
       {/* Screen 3 */}
-      {(step === 3 && compiling) && <WorkspaceLoading loadingText={loadingText} />}
-      {(step === 3 && !compiling) && <div>Loaded !</div>}
+      {(step === 3 && compiledElements.length > 0) && <WorkspaceLoading loadingText={loadingText} compiledElements={compiledElements} />}
+      {(step === 3 && !compiledElements) && <div>Loaded !</div>}
     </div>
   </div>
 )

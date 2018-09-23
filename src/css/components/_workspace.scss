@@ -54,11 +54,65 @@
         }
     }
 
+    &__infos,
+    &__highlight {
+        transition: width .6s ease-in-out;
+    }
+
     &__infos {
+        position: relative;
         align-self: flex-start;
-        padding: 20px;
+        padding: 60px 20px;
         height: calc(100vh - 41px);
         overflow: auto;
+
+        .trigger-code {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .uk-inline,
+        .uk-input {
+            width: 100%;
+        }
+
+        .uk-input {
+            color: $global-color;
+
+            @include placeholder {
+                color: $global-emphasis-color;
+            }
+        }
+
+        .uk-form-large {
+            font-size: 2rem;
+
+            @include placeholder {
+                font-size: 2rem;
+            }
+
+            &:not(textarea):not([multiple]):not([size]) {
+                padding-left: 0;
+            }
+        }
+
+        .uk-fieldset {
+            margin-top: 20px;
+        }
+
+        .uk-legend {
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+        }
+
+        .row {
+            margin-bottom: 20px;
+
+            &__actions {
+                display: flex;
+            }
+        }
     }
 
     &__highlight {
@@ -68,7 +122,22 @@
     }
 
     &__loading {
-        margin: auto;
-        text-align: center;
+        width: 100%;
+        height: calc(100vh - 41px);
+        overflow: auto;
+
+        .uk-table {
+            margin: 0;
+
+            tr {
+                &.success {
+                    background-color: rgba($global-success-background, .2);
+                }
+            }
+        }
     }
+}
+
+.file-drop-target {
+    height: 100%;
 }

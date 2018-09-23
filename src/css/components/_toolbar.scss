@@ -10,9 +10,9 @@
         border-bottom: $base-border;
     }
 
-    .uk-navbar-nav {
+    .uk-iconnav {
         >li {
-            >button {
+            button {
                 display: flex;
                 justify-content: center;
                 align-items: center;

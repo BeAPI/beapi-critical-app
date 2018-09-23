@@ -1,4 +1,5 @@
 import React, {Fragment} from 'react'
+
 import Highlight from 'react-highlight'
 import 'highlight.js/styles/atelier-heath-dark.css'
 
@@ -11,7 +12,7 @@ const WorkspaceConfigInfos = ({config, handleDropStyleFile, handleChangeStyleFil
       {!config.name && <h2 className="workspace__info-title">Untitled Project</h2>}
       <ul uk-accordion="multiple: true;">
         <li>
-          <a className="uk-accordion-title">Environnement</a>
+          <a className="uk-accordion-title">Environment</a>
           <div className="uk-accordion-content">
             <p>{config.url}</p>
           </div>
