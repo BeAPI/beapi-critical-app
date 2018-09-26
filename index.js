@@ -1,13 +1,23 @@
 const { app, BrowserWindow } = require('electron')
+const path = require('path')
+const isDev = require('electron-is-dev')
 
 function createWindow() {
   // Create Browser Window
-  const win = new BrowserWindow({ width: 1280, height: 720 })
+  const win = new BrowserWindow({
+    width: 1280,
+    height: 720,
+    icon: path.join(__dirname, 'assets/icons/png/64x64.png')
+  })
 
   win.setPosition(0, 0)
 
   // Load view
-  win.loadURL('http://localhost:3000')
+  if (isDev) {
+    win.loadURL('http://localhost:3000')
+  } else {
+    win.loadURL('http://localhost:3000')
+  }
 
   win.on('closed', function () {
     // Dereference the window object, usually you would store windows

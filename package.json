@@ -58,6 +58,8 @@
   },
   "devDependencies": {
     "electron": "^2.0.8",
+    "electron-builder": "^20.28.4",
+    "electron-is-dev": "^1.0.1",
     "node-sass": "^4.9.3",
     "penthouse": "^1.8.1",
     "react-file-drop": "^0.2.7",
@@ -66,10 +68,27 @@
     "shelljs": "^0.8.2"
   },
   "scripts": {
-    "start": "node --trace-warnings scripts/start.js",
-    "build": "node scripts/build.js",
+    "start": "node --trace-warnings app/scripts/start.js",
+    "build": "node scripts/build.js && build -mwl --x64 --ia32",
     "test": "node scripts/test.js --env=jsdom",
     "electron": "node --trace-warnings node_modules/.bin/electron ."
+  },
+  "build": {
+    "appId": "beapi-critical-css",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "jest": {
     "collectCoverageFrom": [
